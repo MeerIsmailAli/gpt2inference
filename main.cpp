@@ -71,7 +71,13 @@ std::string load_file(const std::string& path)
 
 vector<vector<float>> do_embed(vector<int32_t>& id){
     //logic to return embedding
+    // need to do both wte and wpe
     vector<vector<float>> arr;
+    ifstream file("weights/transformer.wte.weight.txt");
+    if(!file){
+        cout<<"error\n";
+        while()
+    }
     return arr;
 }
 
@@ -100,7 +106,7 @@ int main(){
     string s="I like the cat is veryhappy";
     vector<int32_t> id=init_tokenizer(s);// i give string and get vector of ids
     vector<vector<float>> embeddings=do_embed(id);
-    
+
 
     return 0;
 }
