@@ -40,7 +40,8 @@ transformer.h.0.ln_1.bias
 
 Both are:
 
-[768]
+wte = [50257, 768]
+wpe = [1024, 768]
 
 These are your LayerNorm:
 

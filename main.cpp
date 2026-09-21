@@ -67,18 +67,45 @@ std::string load_file(const std::string& path)
 // look at previous tokens in attention, so we need to update v, q*k of everything  and then we have score of all, then do v=score*(other values)
 // do this for every iteration for one block , at the end we need to send to mlp, which is basically  
 //using tensor=vector<float>;
-
+vector<vector<float>> do_matadd(vector<vector<float>>& embedding,vector<vector<float>>& wte,vector<vector<float>>& wpe){
+    //
+}
 
 vector<vector<float>> do_embed(vector<int32_t>& id){
     //logic to return embedding
     // need to do both wte and wpe
-    vector<vector<float>> arr;
+    vector<vector<float>> wte(50257,vector<float>(768,0));
+    vector<vector<float>> wpe(1024,vector<float>(768,0));
+    
     ifstream file("weights/transformer.wte.weight.txt");
     if(!file){
         cout<<"error\n";
-        while()
+        return wte;   // debug this
     }
-    return arr;
+    float num;
+    // for wte
+    for(int i=0;i<50257;i++){ 
+        for(int j=0;j<768;j++){
+            file>>num;
+            wte[i][j]=num;
+        }
+    }
+    ifstream file("weights/transformer.wpe.weight.txt");
+    //for wpe
+    for(int i=0;i<50257;i++){ 
+        for(int j=0;j<768;j++){
+            cin>>num;
+            wpe[i][j]=num;
+        }
+    }
+    cout<<" wte and wpe loaded!"<<endl;
+    // so basically we need to return wte + wpe, tokens less than 1024 for now
+    vector<float> embedding;
+    for(int i=0;i<id.size();i++){
+        embedding.push_back( wte[id[i]] );
+    }
+
+    return wte;
 }
 
 
@@ -103,7 +130,9 @@ vector<int32_t> init_tokenizer(string s){
 }
 
 int main(){   
-    string s="I like the cat is veryhappy";
+    string s="I like the cat is veryhappy"; //  for now keep it below 1024 tokens because of wpe restrictions
+
+
     vector<int32_t> id=init_tokenizer(s);// i give string and get vector of ids
     vector<vector<float>> embeddings=do_embed(id);
 
