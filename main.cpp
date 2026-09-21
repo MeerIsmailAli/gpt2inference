@@ -45,6 +45,9 @@
 
 #include "tokenizers_cpp.h"
 
+
+using namespace std;
+
 std::string load_file(const std::string& path)
 {
     std::ifstream file(path, std::ios::binary);
@@ -59,34 +62,45 @@ std::string load_file(const std::string& path)
     );
 }
 
-int main()
-{
+// overall flow is like i have vector of ids, now i need to look up the ids to embeddings, the strore those in a tenor = vector<vector<float>>, then while porcessing 
+// x= wte + wpe  for the first transformer head, it is basically take embedding e then do x=wte+wpe  then x*h0= {q,k,v} , we need to do causality that means only 
+// look at previous tokens in attention, so we need to update v, q*k of everything  and then we have score of all, then do v=score*(other values)
+// do this for every iteration for one block , at the end we need to send to mlp, which is basically  
+//using tensor=vector<float>;
+
+
+vector<vector<float>> do_embed(vector<int32_t>& id){
+    //logic to return embedding
+    vector<vector<float>> arr;
+    return arr;
+}
+
+
+
+vector<int32_t> init_tokenizer(string s){
+    vector<int32_t> ids;
     try {
-        std::string json =
+        string json =
             load_file("weights/tokenizer/tokenizer.json");
 
         auto tokenizer =
             tokenizers::Tokenizer::FromBlobJSON(json);
 
-        std::string text = "I like the cat";
-
-        std::vector<int32_t> ids =
-            tokenizer->Encode(text);
-
-        std::cout << "Input: " << text << "\n";
-
-        std::cout << "Token IDs: ";
-
-        for (int32_t id : ids) {
-            std::cout << id << " ";
-        }
-
-        std::cout << "\n";
+        string text = s;
+        ids=tokenizer->Encode(text);
+            return ids;
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
-        return 1;
     }
+    return ids;
+}
+
+int main(){   
+    string s="I like the cat is veryhappy";
+    vector<int32_t> id=init_tokenizer(s);// i give string and get vector of ids
+    vector<vector<float>> embeddings=do_embed(id);
+    
 
     return 0;
 }

@@ -1,0 +1,31 @@
+Attention
+   ↓
+residual add
+   ↓
+LayerNorm
+   ↓
+MLP
+   ↓
+residual add
+   ↓
+output
+
+
+
+X
+ ↓
+LayerNorm
+ ↓
+Self-Attention
+ ↓
+Residual Add
+ ↓
+LayerNorm
+ ↓
+MLP
+ ↓
+Residual Add
+ ↓
+Output
+
+
