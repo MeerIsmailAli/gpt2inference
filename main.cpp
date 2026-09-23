@@ -49,19 +49,19 @@
 
 using namespace std;
 
-// std::string load_file(const std::string& path)
-// {
-//     std::ifstream file(path, std::ios::binary);
+string load_file(const string& path)
+{
+    ifstream file(path, std::ios::binary);
 
-//     if (!file) {
-//         throw std::runtime_error("Could not open: " + path);
-//     }
+    if (!file) {
+        throw std::runtime_error("Could not open: " + path);
+    }
 
-//     return std::string(
-//         std::istreambuf_iterator<char>(file),
-//         std::istreambuf_iterator<char>()
-//     );
-// }
+    return string(
+        std::istreambuf_iterator<char>(file),
+        std::istreambuf_iterator<char>()
+    );
+}
 
 // overall flow is like i have vector of ids, now i need to look up the ids to embeddings, the strore those in a tenor = vector<vector<float>>, then while porcessing 
 // x= wte + wpe  for the first transformer head, it is basically take embedding e then do x=wte+wpe  then x*h0= {q,k,v} , we need to do causality that means only 
@@ -117,31 +117,34 @@ vector<vector<float>> do_embed(vector<int32_t>& id){
     
     
     //loading wte
-    ifstream file("weights/transformer.wte.weight.txt");
-    if(!file){
-        cout<<"error\n";
+    ifstream file1("weights/transformer.wte.weight.txt");
+    if(!file1){
+        cout<<"error in file1\n";
         return wte;  // debug this
     }
     float num;
     // for wte
     for(int i=0;i<50257;i++){ 
         for(int j=0;j<768;j++){
-            file>>num;
+            file1>>num;
             wte[i][j]=num;
         }
     }
-    file.close();
-    ifstream file("weights/transformer.wpe.weight.txt");
-    
+    file1.close();
+    ifstream file2("weights/transformer.wpe.weight.txt");
+    if(!file2){
+        cout<<"error in file 2\n";
+        return wte;  // debug this
+    }
     
     //for wpe
     for(int i=0;i<1024;i++){ 
         for(int j=0;j<768;j++){
-            file>>num;
+            file2>>num;
             wpe[i][j]=num;
         }
     }
-    file.close();
+    file2.close();
     cout<<" wte and wpe loaded!"<<endl;
     // so basically we need to return wte + wpe, tokens less than 1024 for now
     vector<vector<float>> embedding;
@@ -181,6 +184,6 @@ int main(){
     vector<vector<float>> embeddings=do_embed(id); // i give vector of ids and get return of embeddings(x) with positional addition also
     LayerNorm(embeddings);
     // i think this does the normalisation, then we need to do the learned weights : n*ln1_w + ln_1b
-    cout<<"done till lates"<<endl;
+    cout<<"done till latest"<<endl;
     return 0;
 }
