@@ -53,3 +53,95 @@ So:
 normalized = (x - mean) / sqrt(variance + epsilon)
 
 output = normalized * weight + bias
+
+
+                 INPUT TEXT
+                    │
+                    ▼
+                Tokenizer
+                    │
+                    ▼
+                Token IDs
+                    │
+                    ├──────────────┐
+                    ▼              ▼
+              WTE lookup       WPE lookup
+             token embedding   position embedding
+                    │              │
+                    └──────┬───────┘
+                           ▼
+                    ADD THEM TOGETHER
+                           │
+                           ▼
+                    X [T × 768]
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │ LayerNorm   │
+                    │   ln_1      │
+                    └─────────────┘
+                           │
+                           ▼
+                 Multi-Head Attention
+                           │
+            ┌──────────────┼──────────────┐
+            ▼              ▼              ▼
+           Q               K              V
+            │              │              │
+            └────── Q × Kᵀ ──────────────┘
+                           │
+                           ▼
+                    / sqrt(64)
+                           │
+                           ▼
+                    Causal Mask
+                           │
+                           ▼
+                        Softmax
+                           │
+                           ▼
+                    Attention × V
+                           │
+                           ▼
+                   12 heads × 64
+                           │
+                           ▼
+                    Concatenate
+                      → 768
+                           │
+                           ▼
+                    W_O projection
+                           │
+                           ▼
+                 + original X
+                  (RESIDUAL)
+                           │
+                           ▼
+                         X'
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │ LayerNorm   │
+                    │   ln_2      │
+                    └─────────────┘
+                           │
+                           ▼
+                          MLP
+                           │
+                    ┌──────┴──────┐
+                    ▼             ▼
+                  Linear       Linear
+                  768→3072      3072→768
+                    │
+                    ▼
+                 GELU
+                    │
+                    ▼
+                  Linear
+                    │
+                    ▼
+                 + X'
+               (RESIDUAL)
+                    │
+                    ▼
+               OUTPUT OF BLOCK
